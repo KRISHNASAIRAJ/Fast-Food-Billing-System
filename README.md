@@ -126,3 +126,22 @@ The system will operate in a web-based environment and will be compatible with m
   - Gender
   - Phone Number
   - Payment Type
+
+
+
+
+## How To Run The Project
+
+
+### Step 1: Initialize npm Project
+
+Open your terminal and navigate to your project directory. Then, run the following command to initialize a `package.json` file:
+
+```bash
+npm init -y
+
+npm install express
+
+node index.js
+
+navigate to localhost:3000
