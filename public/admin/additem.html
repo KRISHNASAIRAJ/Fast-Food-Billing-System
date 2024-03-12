@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Add New Item</title>
+</head>
+<body>
+<h2>Add New Item</h2>
+<form onsubmit="submitForm(); return false;">
+
+  <div>
+    <label for="name">Food Item Name</label><br>
+    <input type="text" id="name" name="name" required><br>
+  </div>
+  <div>
+    <label for="price">Price</label><br>
+    <input type="text" id="price" name="price" required><br>
+  </div>
+  <div>
+    <label for="veg_noveg">Veg/Non-veg/Egg:</label><br>
+    <select id="veg_noveg" name="veg_noveg" required>
+      <option value="veg">Veg</option>
+      <option value="noveg">Non-Veg</option>
+      <option value="egg">Egg</option>
+    </select><br>
+  </div>
+  <div>
+    <!-- <label for="item_image">Item Image:</label><br> -->
+    <!-- <input type="file" id="item_image" name="item_image" accept="image/*"><br> -->
+  </div>
+  <div>
+    <br>
+    <input type="submit" value="Submit">
+  </div>
+</form>
+</body>
+</html>

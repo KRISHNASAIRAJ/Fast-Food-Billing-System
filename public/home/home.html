@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Home</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <h1>Welcome to the Home Page</h1>
+  <!-- Add a logout button -->
+  <button id="logoutButton">Logout</button>
+
+  <script>
+    // Add event listener to logout button
+    document.getElementById("logoutButton").addEventListener("click", function() {
+      // Perform logout action by making a request to the logout route
+      fetch("/logout", {
+        method: "GET"
+      }).then(response => {
+        // Redirect to the login page after logout
+        window.location.href = "/login/index.html";
+      }).catch(error => {
+        console.error("Error logging out:", error);
+      });
+    });
+  </script>
+</body>
+</html>
