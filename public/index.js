@@ -28,7 +28,7 @@ let blacklist = [];
 // Redirect to the login page
 app.get("/", (req, res) => {
     // res.redirect('register/register.html');
-    res.redirect('admin/additem.html');
+    res.redirect('admin/emailotp.html');
 });
 
 // Handle login POST request
@@ -144,81 +144,76 @@ app.post("/register", async (request, response) => {
 });
 
 // Function to handle form submission
-function submitForm() {
-    // Get form data
-    const name = document.getElementById('name').value;
-    const price = document.getElementById('price').value;
-    const veg_noveg = document.getElementById('veg_noveg').value;
+// function submitForm() {
+//     // Get form data
+//     const name = document.getElementById('name').value;
+//     const price = document.getElementById('price').value;
+//     const veg_noveg = document.getElementById('veg_noveg').value;
 
-    // Construct the request body
-    const formData = {
-        name: name,
-        price: price,
-        veg_noveg: veg_noveg
-    };
+//     // Construct the request body
+//     const formData = {
+//         name: name,
+//         price: price,
+//         veg_noveg: veg_noveg
+//     };
 
-    // Send form data to the server
-    fetch('/additem', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(formData)
-    })
-    .then(response => {
-        if (response.ok) {
-            // Form submitted successfully
-            alert("Form submitted successfully!");
-            window.location.href = "/admin/additem.html";
-        } else {
-            // Error handling
-            throw new Error('Form submission failed');
-        }
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        alert('Form submission failed. Please try again.');
-    });
-}
-
+//     // Send form data to the server
+//     fetch('/additem', {
+//         method: 'POST',
+//         headers: {
+//             'Content-Type': 'application/json'
+//         },
+//         body: JSON.stringify(formData)
+//     })
+//     .then(response => {
+//         if (response.ok) {
+//             // Form submitted successfully
+//             alert("Form submitted successfully!");
+//             window.location.href = "/admin/additem.html";
+//         } else {
+//             // Error handling
+//             throw new Error('Form submission failed');
+//         }
+//     })
+//     .catch(error => {
+//         console.error('Error:', error);
+//         alert('Form submission failed. Please try again.');
+//     });
+// }
 
 function sendOTP() {
-	const email = document.getElementById('email');
-	const otpverify = document.getElementsByClassName('otpverify')[0];
+    const email = document.getElementById('email');
+    const otpverify = document.getElementsByClassName('otpverify')[0];
 
-	let otp_val = Math.floor(Math.random() * 10000);
+    let otp_val = Math.floor(Math.random() * 10000);
 
-	let emailbody = `<h2>Your OTP is </h2>${otp_val}`;
-	Email.send({
-    SecureToken : "01734aa4-4726-4c20-9b11-35fef074353b",
-    // 3BC857D25151C5F76A2EBC679447C9CC370B
-    To : email.value,
-    From : "krishnasairaj.ponneboina@gmail.com",
-    Subject : "Email OTP using JavaScript",
-    Body : emailbody,
-}).then(
+    let emailbody = `<h2>Your OTP is </h2>${otp_val}`;
+    Email.send({
+        SecureToken: "01734aa4-4726-4c20-9b11-35fef074353b",
+        To: email.value,
+        From: "krishnasairaj.ponneboina@gmail.com",
+        Subject: "Email OTP using JavaScript",
+        Body: emailbody,
+    }).then(
+        message => {
+            if (message === "OK") {
+                alert("OTP sent to your email " + email.value);
 
-	message => {
-		if (message === "OK") {
-			alert("OTP sent to your email " + email.value);
+                otpverify.style.display = "flex";
+                const otp_inp = document.getElementById('otp_inp');
+                const otp_btn = document.getElementById('otp-btn');
 
-			otpverify.style.display = "flex";
-			const otp_inp = document.getElementById('otp_inp');
-			const otp_btn = document.getElementById('otp-btn');
-
-			otp_btn.addEventListener('click', () => {
-				if (otp_inp.value == otp_val) {
-					alert("Email address verified...");
-				}
-				else {
-					alert("Invalid OTP");
-				}
-			})
-		}
-	}
-);
+                otp_btn.addEventListener('click', () => {
+                    if (otp_inp.value == otp_val) {
+                        alert("Email address verified...");
+                    } else {
+                        alert("Invalid OTP");
+                    }
+                });
+            }
+        }
+    );
 }
-
 
 
 // Start the server
