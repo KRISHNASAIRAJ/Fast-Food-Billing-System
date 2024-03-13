@@ -7,7 +7,7 @@
 </head>
 <body>
 <h2>Add New Item</h2>
-<form onsubmit="submitForm(); return false;">
+<form action="/add-item" method="POST" onsubmit="return validateForm()" enctype="multipart/form-data">
 
   <div>
     <label for="name">Food Item Name</label><br>
@@ -15,7 +15,7 @@
   </div>
   <div>
     <label for="price">Price</label><br>
-    <input type="text" id="price" name="price" required><br>
+    <input type="number" id="price" name="price" required><br>
   </div>
   <div>
     <label for="veg_noveg">Veg/Non-veg/Egg:</label><br>
@@ -26,10 +26,10 @@
     </select><br>
   </div>
   <div>
-    <!-- <label for="item_image">Item Image:</label><br> -->
-    <!-- <input type="file" id="item_image" name="item_image" accept="image/*"><br> -->
-  </div>
-  <div>
+    <div>
+      <label for="image">Upload Image</label><br>
+      <input type="file" id="image" name="image" accept="image/*"><br>
+    </div>
     <br>
     <input type="submit" value="Submit">
   </div>

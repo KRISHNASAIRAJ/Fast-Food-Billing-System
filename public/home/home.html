@@ -1,29 +1,60 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Home</title>
-  <link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <h1>Welcome to the Home Page</h1>
-  <!-- Add a logout button -->
-  <button id="logoutButton">Logout</button>
 
-  <script>
-    // Add event listener to logout button
-    document.getElementById("logoutButton").addEventListener("click", function() {
-      // Perform logout action by making a request to the logout route
-      fetch("/logout", {
-        method: "GET"
-      }).then(response => {
-        // Redirect to the login page after logout
-        window.location.href = "/login/index.html";
-      }).catch(error => {
-        console.error("Error logging out:", error);
-      });
-    });
-  </script>
+    <header>
+        <div>RapidDine</div>
+        <nav>
+            <ul>
+                <li>Items</li>
+                <li>Add Item</li>
+                <li>Logout</li>
+            </ul>
+        </nav>
+    </header>
+
+    <div class="slider">
+
+        <div class="list">
+            <div class="item" >
+                <img src="img/1.png">
+            </div>
+            <div class="item active">
+                <img src="img/2.png">
+            </div>
+            <div class="item">
+                <img src="img/3.png">
+            </div>
+            <div class="item">
+                <img src="img/4.png">
+            </div>
+            <div class="item">
+                <img src="img/5.png">
+            </div>
+        </div>
+        <div class="circle">
+           Good Evening Enjoy The Day
+        </div>
+        <div class="content">
+          
+            <div>The</div>
+            <div>RapidDine</div>
+            <button>See More</button>
+
+        </div>
+        <div class="arow">
+            <button id="prev"><</button>
+            <button id="next">></button>
+        </div>
+    </div>
+
+
+    <script src="app.js"></script>
 </body>
 </html>

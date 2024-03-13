@@ -1,11 +1,11 @@
-const express = require("express");
-const bodyParser = require("body-parser");
-const mongoose = require("mongoose");
+var express = require("express");
+var bodyParser = require("body-parser");
+var mongoose = require("mongoose");
+var jwt = require("jsonwebtoken");
 const { exec } = require("child_process");
-const multer = require("multer");
+const multer=require("multer")
 const app = express();
 
-// Middleware
 app.use(bodyParser.json());
 app.use(express.static("public"));
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -15,18 +15,29 @@ mongoose
   .connect(
     "mongodb+srv://krishnasairaj:3TLvpofXOtrP94NE@cluster1.katgqk9.mongodb.net/fastfood?retryWrites=true&w=majority"
   )
-  .then(() => console.log("Connected to MongoDB"))
-  .catch((err) => console.error("Error connecting to MongoDB:", err));
+  .then(() => {
+    console.log("Connected to MongoDB");
+  })
+  .catch((err) => {
+    console.error("Error connecting to MongoDB:", err);
+  });
 
-const db = mongoose.connection;
+var db = mongoose.connection;
+
+// Check database connection
 db.on("error", () => console.log("Error in connecting to database"));
 db.once("open", () => console.log("Connected to Database"));
 
+// Initialize blacklist array
+let blacklist = [];
+
 // Redirect to the login page
 app.get("/", (req, res) => {
-  res.redirect('register/register.html');
+  // res.redirect("register/register.html");
+  res.redirect('login/index.html');
 });
 
+// Handle login POST request
 app.post("/login", async (request, response) => {
   try {
     const { username, password } = request.body;
@@ -41,15 +52,75 @@ app.post("/login", async (request, response) => {
         </script>
     `);
     }
-    
-    // Redirect to the home page if login is successful
+    const token = generateToken(user);
+    // response.json({ token });
     response.redirect("/home/home.html");
   } catch (error) {
     response.status(500).send("Internal server error");
   }
 });
+// Handle logout request
+app.post("/logout", (request, response) => {
+  try {
+    const token = request.headers.authorization.split(" ")[1];
+    if (!token) {
+      return response.status(400).send("No token provided");
+    }
+    blacklist.push(token); // Add token to blacklist
+    // Redirect to the login page after logout
+    response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate"); // HTTP 1.1.
+    response.setHeader("Pragma", "no-cache"); // HTTP 1.0.
+    response.setHeader("Expires", "0"); // Proxies.
+    response.redirect("/login.html");
+  } catch (error) {
+    console.error("Error logging out:", error);
+    response.status(500).send("Error logging out");
+  }
+});
 
-// Registration route
+// Middleware to verify token
+function verifyToken(request, response, next) {
+  try {
+    const token = request.headers.authorization.split(" ")[1];
+    if (!token) {
+      return response.status(403).send("No token provided");
+    }
+    if (blacklist.includes(token)) {
+      return response.status(401).send("Token revoked. Please log in again.");
+    }
+    jwt.verify(token, "secret_key", (err, decoded) => {
+      if (err) {
+        return response.status(401).send("Invalid token");
+      }
+      request.user = decoded;
+      next();
+    });
+  } catch (error) {
+    console.error("Error verifying token:", error);
+    response.status(500).send("Internal server error");
+  }
+}
+
+// Protected route example
+app.get("/protected", verifyToken, (request, response) => {
+  response.send("Protected route accessed successfully!");
+});
+
+// Token generation function
+function generateToken(user) {
+  const payload = {
+    id: user._id,
+    username: user.username,
+    // Add any other user data you want to include in the token
+  };
+  const options = {
+    expiresIn: "1h", // Token expiration time
+    // Add other options if needed
+  };
+  return jwt.sign(payload, "secret_key", options);
+}
+
+const swal = require("sweetalert");
 app.post("/register", async (request, response) => {
   try {
     const { username, name, email, password } = request.body;
@@ -80,38 +151,47 @@ app.post("/register", async (request, response) => {
   }
 });
 
-// Define the schema for menu items
 const menuItemSchema = new mongoose.Schema({
-  item_code: String,
+  item_code: String, // Add item_code field
   name: String,
   price: Number,
   veg_noveg: String,
-  image_name: String,
-  image: {
-    data: Buffer,
-    contentType: String
+  image_name:String,
+  image:{
+    data:Buffer,
+    contentType:String
   }
 });
 
 // Create a model for the "menuitems" collection
 const MenuItem = mongoose.model("menuitems", menuItemSchema);
 
-// Configure multer for image uploads
-const storage = multer.memoryStorage();
-const upload = multer({ storage: storage });
+//image storage
+const storage=multer.memoryStorage()
+const upload=multer({storage:storage})
 
-// Endpoint to handle form submission for adding items
+// Validate form data middleware
+function validateFormData(req, res, next) {
+  const { price } = req.body;
+  if (isNaN(price)) {
+    return res.status(400).send("Price must be a number");
+  }
+  next();
+}
+
+// Endpoint to handle form submission
 app.post('/add-item', upload.single('image'), async (req, res) => {
   try {
     if (!req.file) {
       return res.status(400).send('No file uploaded');
     }
 
+    // Retrieve the count of existing items to generate the item code
     const itemCount = await MenuItem.countDocuments();
-    const itemCode = 'P' + (itemCount + 1).toString().padStart(3, '0');
+    const itemCode = 'P' + (itemCount + 1).toString().padStart(3, '0'); // Generate item code
 
     const newItem = new MenuItem({
-      item_code: itemCode,
+      item_code: itemCode, // Set the generated item code
       name: req.body.name,
       price: req.body.price,
       veg_noveg: req.body.veg_noveg,
@@ -129,6 +209,10 @@ app.post('/add-item', upload.single('image'), async (req, res) => {
     res.status(500).send('Internal server error');
   }
 });
+
+// Already the separate files for displaying items are generated dont delete them the problem is images are not loading thats it
+
+
 
 app.get('/items', async (req, res) => {
   try {
@@ -159,12 +243,14 @@ app.get('/items', async (req, res) => {
     res.status(500).send('Internal server error');
   }
 });
+
+
 // app.get('/items', async (req, res) => {
 //   try {
 //     // Retrieve items from the database
 //     const items = await MenuItem.find();
 
-//     // Send the items data as JSON
+//     // Send JSON response with items data
 //     res.json(items);
 //   } catch (error) {
 //     console.error('Error fetching items:', error);
@@ -172,9 +258,10 @@ app.get('/items', async (req, res) => {
 //   }
 // });
 
-// Start the server
+
 const PORT = process.env.PORT || 3000;
 const server = app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
+  // Open localhost:3000 in default browser
   exec("start http://localhost:3000");
 });
