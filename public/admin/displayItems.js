@@ -39,7 +39,6 @@ async function displayItems() {
       itemDiv.appendChild(itemName);
       itemDiv.appendChild(itemPrice);
       itemDiv.appendChild(itemVegNonVeg);
-
       itemContainer.appendChild(itemDiv);
     });
   } catch (error) {

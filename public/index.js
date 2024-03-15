@@ -24,6 +24,7 @@ db.once("open", () => console.log("Connected to Database"));
 
 // Redirect to the login page
 app.get("/", (req, res) => {
+  // res.redirect('register/register.html');
   res.redirect('register/register.html');
 });
 
@@ -32,22 +33,39 @@ app.post("/login", async (request, response) => {
     const { username, password } = request.body;
     const user = await db
       .collection("creds")
-      .findOne({ username: username, password: password });
+      .findOne({ username: username });
+
     if (!user) {
       response.send(`
         <script>
+          alert("Invalid Username or Password");
+          window.location.href = "/login/index.html";
+        </script>
+      `);
+    } else {
+      // Check if the user is admin
+      if (username === "admin" && user.password === password) {
+        // Redirect to admin.html if user is admin
+        response.redirect("/admin/home/home.html");
+        // response.redirect("/home/home.html");
+      } else if (user.password === password) {
+        // Redirect to home.html for regular users
+        response.redirect("/error/404.html");
+      } else {
+        // Invalid password
+        response.send(`
+          <script>
             alert("Invalid Username or Password");
             window.location.href = "/login/index.html";
-        </script>
-    `);
+          </script>
+        `);
+      }
     }
-    
-    // Redirect to the home page if login is successful
-    response.redirect("/home/home.html");
   } catch (error) {
     response.status(500).send("Internal server error");
   }
 });
+
 
 // Registration route
 app.post("/register", async (request, response) => {
@@ -123,54 +141,76 @@ app.post('/add-item', upload.single('image'), async (req, res) => {
     });
 
     await newItem.save();
-    res.send('Item added successfully!');
+    
+    // Generate a popup message on the page
+    const popupMessage = `
+      <script>
+        alert('Item added successfully!');
+        window.location.href = '/admin/additem.html'; // Redirect to the home page
+      </script>
+    `;
+    res.send(popupMessage);
   } catch (err) {
     console.error('Error adding item:', err);
     res.status(500).send('Internal server error');
   }
 });
 
-app.get('/items', async (req, res) => {
-  try {
-    // Retrieve items from the database
-    const items = await MenuItem.find();
-
-    // Render the items along with their details in HTML
-    let html = '<h2>Items</h2>';
-    html += '<div style="display: flex; flex-wrap: wrap;">'; // Flex container to display items flexibly
-    items.forEach((item, index) => {
-      // Start a new row after every third item
-      if (index % 3 === 0 && index !== 0) {
-        html += '</div><div style="display: flex; flex-wrap: wrap;">';
-      }
-      html += `<div style="width: 30%; margin: 8px; padding: 10px; border: 2px solid #ccc; border-radius: 8px;">`; // Adjust width for three items per row
-      html += `<img style="width: 370px; height: 350px; object-fit: contain; border-radius: 5px;" src="data:${item.image.contentType};base64,${item.image.data.toString('base64')}">`;
-      html += `<p>Item Code: ${item.item_code}</p>`; // Display item code
-      html += `<p>Name: ${item.name}</p>`;
-      html += `<p>Price: ${item.price}</p>`;
-      html += `<p>Veg/Non-Veg: ${item.veg_noveg}</p>`;
-      html += `</div>`;
-    });
-    html += '</div>';
-
-    res.send(html);
-  } catch (error) {
-    console.error('Error fetching items:', error);
-    res.status(500).send('Internal server error');
-  }
-});
 // app.get('/items', async (req, res) => {
 //   try {
 //     // Retrieve items from the database
 //     const items = await MenuItem.find();
 
-//     // Send the items data as JSON
-//     res.json(items);
+//     // Render the items along with their details in HTML
+//     let html = '<h2>Items</h2>';
+//     html += '<div style="display: flex; flex-wrap: wrap;">'; // Flex container to display items flexibly
+//     items.forEach((item, index) => {
+//       // Start a new row after every third item
+//       if (index % 3 === 0 && index !== 0) {
+//         html += '</div><div style="display: flex; flex-wrap: wrap;">';
+//       }
+//       html += `<div style="width: 30%; margin: 8px; padding: 10px; border: 2px solid #ccc; border-radius: 8px;">`; // Adjust width for three items per row
+//       html += `<img style="width: 370px; height: 350px; object-fit: contain; border-radius: 5px;" src="data:${item.image.contentType};base64,${item.image.data.toString('base64')}">`;
+//       html += `<p>Item Code: ${item.item_code}</p>`; // Display item code
+//       html += `<p>Name: ${item.name}</p>`;
+//       html += `<p>Price: ${item.price}</p>`;
+//       html += `<p>Veg/Non-Veg: ${item.veg_noveg}</p>`;
+//       html += `</div>`;
+//     });
+//     html += '</div>';
+
+//     res.send(html);
 //   } catch (error) {
 //     console.error('Error fetching items:', error);
-//     res.status(500).json({ error: 'Internal server error' });
+//     res.status(500).send('Internal server error');
 //   }
 // });
+app.get('/items', async (req, res) => {
+  try {
+    // Retrieve items from the database
+    const items = await MenuItem.find();
+
+    // Send the items data as JSON
+    res.json(items);
+  } catch (error) {
+    console.error('Error fetching items:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+function validateForm() {
+  var name = document.getElementById('name').value;
+  var price = document.getElementById('price').value;
+  var veg_noveg = document.getElementById('veg_noveg').value;
+
+  // Check if any of the required fields are empty
+  if (name.trim() === '' || price.trim() === '' || veg_noveg.trim() === '') {
+    alert('Please fill out all required fields.');
+    return false; // Prevent form submission
+  }
+
+  return true; // Allow form submission
+}
 
 // Start the server
 const PORT = process.env.PORT || 3000;

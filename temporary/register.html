@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Registration Form</title>
+  <title>Register</title>
   <link rel="stylesheet" href="style.css">
   <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
 </head>
@@ -20,6 +20,14 @@
       <div class="input-box">
         <input type="text" placeholder="Email" name="email" required>
       </div>
+      <!-- <div class="input-box email-box"> -->
+        <!-- <input type="text" placeholder="Email" name="email" required> -->
+        <!-- <button onclick="sendOTP()" type="button" class="send-otp-btn">Send OTP</button> -->
+      </div>
+      <!-- <div class="otpverify">
+        <input type="text" id="otp_inp" placeholder="Enter OTP">
+        <button id="otp-btn">Verify</button>
+        </div> -->
       <div class="input-box">
         <input type="password" placeholder="Password" name="password" required>
       </div>
@@ -29,5 +37,6 @@
       </div>
     </form>
   </div>
+  <script src="https://smtpjs.com/v3/smtp.js"></script>
 </body>
 </html>

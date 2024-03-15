@@ -1,38 +1,73 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Add New Item</title>
-</head>
-<body>
-<h2>Add New Item</h2>
-<form action="/add-item" method="POST" onsubmit="return validateForm()" enctype="multipart/form-data">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Add New Item</title>
+    <link rel="stylesheet" href="additem.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Work+Sans&display=swap" rel="stylesheet">
+    <script
+      src="https://kit.fontawesome.com/64d58efce2.js"
+      crossorigin="anonymous"
+    ></script>
+  </head>
+  <body>
+    <div class="container">
+      <span class="big-circle"></span>
 
-  <div>
-    <label for="name">Food Item Name</label><br>
-    <input type="text" id="name" name="name" required><br>
-  </div>
-  <div>
-    <label for="price">Price</label><br>
-    <input type="number" id="price" name="price" required><br>
-  </div>
-  <div>
-    <label for="veg_noveg">Veg/Non-veg/Egg:</label><br>
-    <select id="veg_noveg" name="veg_noveg" required>
-      <option value="veg">Veg</option>
-      <option value="noveg">Non-Veg</option>
-      <option value="egg">Egg</option>
-    </select><br>
-  </div>
-  <div>
-    <div>
-      <label for="image">Upload Image</label><br>
-      <input type="file" id="image" name="image" accept="image/*"><br>
+      <div class="contact-form">
+        <span class="circle one"></span>
+        <span class="circle two"></span>
+
+        <!-- Add the form element here -->
+        <form action="/add-item" method="POST" onsubmit="return validateForm()" enctype="multipart/form-data">
+
+          <h3 class="title">Add New Item</h3>
+          <div class="input-container">
+            <input type="text" id="name" name="name" class="input" required/>
+            <label for="">Item Name</label>
+            <span>itemname</span>
+          </div>
+          <div class="input-container">               
+            <input type="number" id="price"  name="price" class="input" required/>
+            <label for="price">Price</label>
+            <span>price</span>
+          </div>
+          <div class="input-container">
+            <label for="veg_noveg">Veg/Non-veg/Egg</label>
+            <select id="veg_noveg" name="veg_noveg" class="input" required>
+              <option disabled selected hidden></option>
+              <option value="veg">Veg</option>
+              <option value="noveg">Non-Veg</option>
+              <option value="egg">Egg</option>
+            </select>
+            <span>veg_noveg</span>
+          </div>
+          <div id="wrapper">
+            <header>
+              <!-- Wrap the SVG icon with an input element -->
+              <label for="image" class="iconDiv" tooltip="Load file" tabindex="0">
+                <input type="file" id="image" name="image" accept="image/*"><br>
+                <div class="iconSVG">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M5 19a2 2 0 01-2-2V7a2 2 0 012-2h4l2 2h4a2 2 0 012 2v1M5 19h14a2 2 0 002-2v-5a2 2 0 00-2-2H9a2 2 0 00-2 2v5a2 2 0 01-2 2z" />
+                  </svg>
+                </div>
+              </label>
+            </header>
+          </div>
+          <div class="input-container">
+            <input type="submit" value="Submit" class="btn">
+          </div>
+
+        </form>
+        <!-- End of form element -->
+
+      </div>
     </div>
-    <br>
-    <input type="submit" value="Submit">
-  </div>
-</form>
-</body>
+
+    <script src="additem.js"></script>
+  </body>
 </html>
