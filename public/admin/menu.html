@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<head>
+    <title>Crud Operation</title>
+</head>
+
+<body>
+    <table>
+        <tr>
+            <td>
+                <form autocomplete="off" onsubmit="onFormSubmit()">
+                    <div>
+                        <label for="productCode">Item Code</label>
+                        <input type="text" name="productCode" id="productCode">
+                    </div>
+                    <div>
+                        <label for="product">Name</label>
+                        <input type="text" name="product" id="product">
+                    </div>
+                    <div>
+                        <label for="qty">Price</label>
+                        <input type="number" name="qty" id="qty">
+                    </div>
+                    <div>
+                        <label for="veg_noveg"></label>
+                        <select name="veg_noveg" id="veg_noveg">
+                            <option value="veg">Veg</option>
+                            <option value="non-veg">Non-Veg</option>
+                            <option value="egg">Egg</option>
+                        </select>
+                    </div>
+                    <div class="form_action--button">
+                        <input type="submit" value="Submit">
+                        <input type="reset" value="Reset">
+                    </div>
+                </form>
+            </td>
+        </tr>
+    </table>
+    <header>
+        <nav>
+            <div class="navbar">
+                <div class="list-item">
+                    <a href="home.html">Home</a>
+                </div>
+                <div class="list-item">
+                    <!-- Update this link to point to the /items route -->
+                    <a href="/items">Menu</a>
+                </div>
+                <div class="list-item">
+                    <a href="#">Users</a>
+                </div>
+                <div class="list-item">
+                    <a href="#">Other</a>
+                </div>
+            </div>
+        </nav>
+    </header>
+    <script type="text/javascript" src="./script.js"></script>
+</body>
+</html>

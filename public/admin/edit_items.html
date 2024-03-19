@@ -1,0 +1,56 @@
+<!-- edit_items.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Item</title>
+</head>
+<body>
+    <h1>Edit Item</h1>
+    <form id="editItemForm" action="/update-item" method="POST">
+        <!-- Add form fields for editing item details -->
+        <input type="text" id="name" name="name" class="input" placeholder="Item Name" required/>
+        <label for="price">Price:</label>
+        <input type="number" id="price" name="price"><br><br>
+        <label for="veg_noveg">Veg/Non-Veg:</label>
+        <input type="text" id="veg_noveg" name="veg_noveg"><br><br>
+        <input type="submit" value="Update Item">
+    </form>
+
+    <script>
+        // Function to fetch item details and populate form fields
+        async function fetchItemDetails(itemId) {
+            try {
+                const response = await fetch(`/edit-items/${itemId}`);
+                if (response.ok) {
+                    const item = await response.json();
+                    if (item !== null) {
+                        // Populate form fields with item details
+                        document.getElementById('name').value = item.name;
+                        document.getElementById('price').value = item.price;
+                        document.getElementById('veg_noveg').value = item.veg_noveg;
+                    } else {
+                        // Handle case where item is null
+                        throw new Error('Item details not found');
+                    }
+                } else {
+                    throw new Error('Failed to fetch item details');
+                }
+            } catch (error) {
+                console.error('Error fetching item details:', error);
+                alert('Failed to fetch item details. Please try again later.');
+            }
+        }
+
+        // Get the item ID from the URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const itemId = urlParams.get('itemId');
+
+        // Fetch item details when the page loads
+        window.onload = function() {
+            fetchItemDetails(itemId);
+        };
+    </script>
+</body>
+</html>
