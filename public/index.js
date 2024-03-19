@@ -6,6 +6,7 @@ const multer = require("multer");
 const path = require("path");
 const app = express();
 app.set("view engine", "ejs");
+
 // Middleware
 app.use(bodyParser.json());
 app.use(express.static("public"));
@@ -45,7 +46,6 @@ app.post("/login", async (request, response) => {
       if (username === "admin" && user.password === password) {
         // Redirect to admin.html if user is admin
         response.redirect("/admin/home/home.html");
-        // response.redirect("/home/home.html");
       } else if (user.password === password) {
         // Redirect to home.html for regular users
         response.redirect("/error/404.html");
@@ -154,7 +154,7 @@ app.post("/add-item", upload.single("image"), async (req, res) => {
   }
 });
 
-
+// Endpoint to retrieve items from the database
 app.get("/items", async (req, res) => {
   try {
     // Retrieve items from the database
@@ -177,7 +177,7 @@ app.get("/items", async (req, res) => {
       html += `<p>Price: ${item.price}</p>`;
       html += `<p>Veg/Non-Veg: ${item.veg_noveg}</p>`;
       // Update the editItem function in the client-side JavaScript
-      html += `<button onclick="editItem('${item._id}')">Edit</button>`;
+      html += `<button onclick="editItem('${item.item_code}')">Edit</button>`;
       html += `<button onclick="confirmDelete('${item._id}')">Delete</button>`; // Call confirmDelete function with item ID
       html += `</div>`;
     });
@@ -207,8 +207,9 @@ app.get("/items", async (req, res) => {
             alert('Failed to delete item');
           }
         }
-        function editItem(itemId) {
-          window.location.href = '/admin/edit_items.html'; // Redirect to edit_items.html
+
+        function editItem(itemCode) {
+          window.location.href = \`/admin/edit_items.html?itemCode=\${itemCode}\`;
         }
       </script>
     `;
@@ -219,34 +220,20 @@ app.get("/items", async (req, res) => {
   }
 });
 
-
-// app.get("/edit-items/:itemId", async (req, res) => {
-//   try {
-//     const itemId = req.params.itemId;
-
-//     // Find the item by its ID
-//     const item = await MenuItem.findById(itemId);
-
-//     // Render the edit_items.ejs template with item details
-//     res.render('edit_item', { item: item });
-//   } catch (error) {
-//     console.error("Error fetching item for editing:", error);
-//     res.status(500).send("Error fetching item for editing");
-//   }
-// });
-
+// Endpoint to retrieve item details for editing
 app.get("/edit-items/:itemCode", async (req, res) => {
   try {
-    const itemId = req.params.itemId;
-    const item = await MenuItem.findById(itemId);
+    const itemCode = req.params.itemCode;
+    const item = await MenuItem.findOne({ item_code: itemCode }); // Using findOne instead of findById
+    if (!item) {
+      return res.status(404).send("Item not found");
+    }
     res.json(item);
   } catch (error) {
     console.error("Error fetching item for editing:", error);
     res.status(500).send("Error fetching item for editing");
   }
 });
-
-
 
 // Endpoint to handle item deletion
 app.delete("/items/:itemId", async (req, res) => {
@@ -265,11 +252,37 @@ app.delete("/items/:itemId", async (req, res) => {
   }
 });
 
+// Endpoint to handle item updates
+// Endpoint to handle item updates
+app.post("/update-item", async (req, res) => {
+  try {
+    // Extract item details from the request body
+    const { name, price, veg_noveg, itemCode } = req.body; // Retrieve item code from request body
 
+    // Find the item by its item code and update its details
+    const updatedItem = await MenuItem.findOneAndUpdate(
+      { item_code: itemCode },
+      { name: name, price: price, veg_noveg: veg_noveg },
+      { new: true }
+    );
+
+    // Check if the item was successfully updated
+    if (!updatedItem) {
+      return res.status(404).send("Item not found");
+    }
+
+    // Send a success response with the updated item
+    res.json(updatedItem);
+  } catch (error) {
+    // If an error occurs, log it and send a 500 (Internal Server Error) response
+    console.error("Error updating item:", error);
+    res.status(500).send("Error updating item");
+  }
+});
 
 // Start the server
 const PORT = process.env.PORT || 3000;
 const server = app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
-   exec("start http://localhost:3000");
+  exec("start http://localhost:3000/items");
 });

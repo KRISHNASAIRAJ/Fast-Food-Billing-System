@@ -1,4 +1,3 @@
-<!-- edit_items.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -10,19 +9,20 @@
     <h1>Edit Item</h1>
     <form id="editItemForm" action="/update-item" method="POST">
         <!-- Add form fields for editing item details -->
-        <input type="text" id="name" name="name" class="input" placeholder="Item Name" required/>
+        <input type="text" id="name" name="name" class="input" placeholder="Item Name" required/><br><br>
         <label for="price">Price:</label>
-        <input type="number" id="price" name="price"><br><br>
+        <input type="number" id="price" name="price" required><br><br>
         <label for="veg_noveg">Veg/Non-Veg:</label>
-        <input type="text" id="veg_noveg" name="veg_noveg"><br><br>
+        <input type="text" id="veg_noveg" name="veg_noveg" required><br><br>
+        <input type="hidden" id="itemCode" name="itemCode"> <!-- Add a hidden input field to store the item code -->
         <input type="submit" value="Update Item">
     </form>
 
     <script>
         // Function to fetch item details and populate form fields
-        async function fetchItemDetails(itemId) {
+        async function fetchItemDetails(itemCode) {
             try {
-                const response = await fetch(`/edit-items/${itemId}`);
+                const response = await fetch(`/edit-items/${itemCode}`);
                 if (response.ok) {
                     const item = await response.json();
                     if (item !== null) {
@@ -30,6 +30,7 @@
                         document.getElementById('name').value = item.name;
                         document.getElementById('price').value = item.price;
                         document.getElementById('veg_noveg').value = item.veg_noveg;
+                        document.getElementById('itemCode').value = item.item_code; // Set the item code in the hidden input field
                     } else {
                         // Handle case where item is null
                         throw new Error('Item details not found');
@@ -42,15 +43,42 @@
                 alert('Failed to fetch item details. Please try again later.');
             }
         }
-
-        // Get the item ID from the URL
+    
+        // Get the item code from the URL
         const urlParams = new URLSearchParams(window.location.search);
-        const itemId = urlParams.get('itemId');
-
+        const itemCode = urlParams.get('itemCode');
+    
         // Fetch item details when the page loads
         window.onload = function() {
-            fetchItemDetails(itemId);
+            fetchItemDetails(itemCode);
         };
+
+        // Add event listener for form submission
+        // Add event listener for form submission
+        document.getElementById('editItemForm').addEventListener('submit', async function(event) {
+            event.preventDefault(); // Prevent default form submission
+            const formData = new FormData(this); // Get form data
+            const urlParams = new URLSearchParams(window.location.search);
+            const itemCode = urlParams.get('itemCode');
+            formData.append('itemCode', itemCode); // Append itemCode to formData
+        
+            try {
+                const response = await fetch('/update-item', {
+                    method: 'POST',
+                    body: formData
+                });
+                if (response.ok) {
+                    alert('Item updated successfully');
+                    // Redirect or perform any other action upon successful update
+                } else {
+                    throw new Error('Failed to update item');
+                }
+            } catch (error) {
+                console.error('Error updating item:', error);
+                alert('Failed to update item. Please try again later.');
+            }
+        });
+        
     </script>
 </body>
 </html>
